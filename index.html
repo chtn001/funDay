@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mood Food Suggestion</title>
+<style>
+body {
+    font-family: Arial; 
+    margin: 0; 
+    padding: 0; 
+    min-height: 100vh; 
+    display: flex; 
+    justify-content: center; 
+    align-items: center; 
+    transition: background 1s;
+    position: relative;
+}
+
+/* Container with soft shadow for depth */
+.container {
+    background: rgba(255,255,255,0.2);
+    padding: 30px;
+    border-radius: 15px;
+    text-align: center;
+    width: 90%;
+    max-width: 500px;
+    z-index: 1;
+    position: relative;
+
+    /* Soft shadow */
+    box-shadow: 0 15px 35px rgba(0,0,0,0.25), 0 5px 15px rgba(0,0,0,0.1);
+    transition: box-shadow 0.3s;
+}
+
+.container:hover {
+    /* Slightly enhance shadow on hover */
+    box-shadow: 0 20px 45px rgba(0,0,0,0.3), 0 8px 20px rgba(0,0,0,0.12);
+}
+
+h1 { margin: 10px 0; }
+h2 { margin: 20px 0; }
+
+button {
+    padding: 10px 20px; 
+    margin: 10px; 
+    font-size: 16px; 
+    border: none; 
+    border-radius: 8px; 
+    cursor: pointer; 
+    transition: 0.3s;
+}
+button:hover { transform: scale(1.1); }
+
+#result { margin-top: 20px; font-size: 22px; font-weight: bold; }
+#message { margin-top: 10px; font-size: 16px; }
+#retry { display: none; margin-top: 20px; padding: 10px 20px; font-size: 16px; border-radius: 8px; cursor: pointer;}
+
+/* Thermometer */
+.thermo-container {
+    position: absolute;
+    left: 20px;
+    bottom: 50px;
+    width: 50px;
+    height: 300px;
+    border-radius: 25px;
+    background: linear-gradient(to top, #FFDAB9, #FFB347, #FF6B6B, #6BCB77, #4D96FF, #8338EC);
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    padding-bottom: 5px;
+}
+
+.ball {
+    width: 30px;
+    height: 30px;
+    background: white;
+    border-radius: 50%;
+    box-shadow: 0 0 10px #fff;
+    transition: transform 1s ease, background 1s ease;
+}
+
+/* Input bar like GPT with search icon */
+.input-bar {
+    position: fixed;
+    bottom: 20px;
+    width: 90%;
+    max-width: 500px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 2;
+    background: #fff;
+    border-radius: 25px;
+    padding: 2px 10px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+}
+
+.input-bar input {
+    flex: 1;
+    padding: 12px 15px;
+    border-radius: 25px;
+    border: none;
+    font-size: 16px;
+    outline: none;
+}
+
+.input-bar .search-icon {
+    font-size: 18px;
+    margin-left: 10px;
+    cursor: pointer;
+    color: #555;
+}
+</style>
+</head>
+<body>
+
+<div class="thermo-container">
+    <div class="ball" id="ball"></div>
+</div>
+
+<div class="container">
+    <h1 id="greeting">Hello!</h1>
+    <h1 id="mood-indicator">😐</h1>
+    <h2>How are you feeling today?</h2>
+    <div class="buttons">
+        <button onclick="showCombo('frustrated')">Frustrated</button>
+        <button onclick="showCombo('sad')">Sad</button>
+        <button onclick="showCombo('average')">Average</button>
+        <button onclick="showCombo('happy')">Happy</button>
+    </div>
+    <div id="result"></div>
+    <div id="message"></div>
+    <button id="retry" onclick="resetGame()">Try Again</button>
+</div>
+
+<div class="input-bar">
+    <input type="text" placeholder="Kuuch khna h Author ko" id="authorInput">
+    <span class="search-icon">&#128269;</span>
+</div>
+
+<script>
+// Name prompt
+let name = prompt("Enter your name:");
+document.getElementById("greeting").textContent = "Hello, " + name + "!";
+
+// Colors and ball position
+let letterColors = {a:"#FFDAB9", b:"#6BCB77", c:"#FF6B6B", d:"#FFD93D", e:"#8338EC", f:"#FFB347", n:"#FFDDC1", default:"#8D99AE"};
+let letterPosition = {a:0, b:20, c:40, d:60, e:80, f:50, n:10, default:50};
+let firstLetter = name.charAt(0).toLowerCase();
+let bgColor = letterColors[firstLetter] || letterColors.default;
+let ballPos = letterPosition[firstLetter] || letterPosition.default;
+
+// Set background and ball
+document.body.style.background = bgColor;
+let ball = document.getElementById("ball");
+ball.style.transform = `translateY(-${ballPos}%)`;
+ball.style.background = bgColor;
+
+// Emojis and messages
+let emojis = {frustrated:"😡", sad:"😢", average:"😐", happy:"😄"};
+let messages = {
+    frustrated:["Bold combo!","Hmm… interesting!"], 
+    sad:["Cheer up!","Try this for a smile!"], 
+    average:["Classic combo!","Simple & nice!"], 
+    happy:["Yay! Enjoy!","Perfect for your mood!"]
+};
+
+// Food items
+let foodsList = ["garlic","sugar","tea","coffee","salt","curd","water","milk","dal","rice","cucumber","onion","carrot","tomato","raw potato","lemon","banana","chilli","red chilli","green chilli","peanuts"];
+
+function showCombo(mood){
+    document.getElementById('mood-indicator').textContent = "🤔"; // thinking emoji
+    document.getElementById('result').textContent = "Choosing combo...";
+    document.getElementById('message').textContent = "";
+
+    // Fake thinking delay
+    setTimeout(() => {
+        document.getElementById('mood-indicator').textContent = emojis[mood];
+
+        let firstIndex = Math.floor(Math.random() * foodsList.length);
+        let secondIndex;
+        do { secondIndex = Math.floor(Math.random() * foodsList.length);} while(secondIndex === firstIndex);
+
+        document.getElementById('result').textContent = "Try: " + foodsList[firstIndex] + " + " + foodsList[secondIndex];
+        let msg = messages[mood][Math.floor(Math.random()*messages[mood].length)];
+        document.getElementById('message').textContent = msg;
+
+        document.getElementById('retry').style.display = "inline-block";
+    }, 800); // 0.8s delay for realism
+}
+
+function resetGame(){
+    document.getElementById('mood-indicator').textContent = "😐";
+    document.getElementById('result').textContent = "";
+    document.getElementById('message').textContent = "";
+    document.getElementById('retry').style.display = "none";
+}
+</script>
+
+</body>
+</html>
