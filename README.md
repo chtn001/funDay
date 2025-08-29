@@ -52,7 +52,6 @@ You can try the app by opening the `index.html` file in a browser.
 ## File Structure
 
 ├── index.html # Main HTML file
-├── style.css # Optional: If CSS is separated
 └── README.md # Project documentation
 
 
