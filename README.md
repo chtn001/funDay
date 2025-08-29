@@ -24,7 +24,7 @@ You can try the app by opening the `index.html` file in a browser.
 
 ## Screenshots
 
-![Screenshot](screenshot.png) *(Optional: Add your own screenshot here)*
+![ design Screenshot](design.jpg) 
 
 ---
 
